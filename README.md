@@ -117,7 +117,7 @@ docker-compose exec app composer run setup
 
 ---
 
-## 👥 Kontributor (Kelompok 4)
+## 👥 Kontributor (Kelompok 1)
 
 | Nama | Peran |
 | --- | --- |
