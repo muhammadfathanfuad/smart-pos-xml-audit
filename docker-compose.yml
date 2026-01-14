@@ -1,0 +1,64 @@
+services:
+  # PHP Application (Laravel 12)
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: pos-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./src:/var/www
+    ports:
+      - "5173:5173"
+    networks:
+      - pos-network
+
+  # Nginx Web Server
+  web:
+    image: nginx:alpine
+    container_name: pos-web
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - pos-network
+
+  # MySQL Database (Relational DB)
+  db:
+    image: mysql:8.4
+    container_name: pos-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: smart_pos
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - pos-network
+
+  # PHPMyAdmin (Optional, for easy DB check)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: pos-pma
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "8081:80"
+    networks:
+      - pos-network
+
+networks:
+  pos-network:
+    driver: bridge
+
+volumes:
+  db-data:
